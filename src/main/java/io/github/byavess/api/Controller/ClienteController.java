@@ -5,74 +5,75 @@ import io.github.byavess.domain.repository.Clientes;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Example;
 import org.springframework.data.domain.ExampleMatcher;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.server.ResponseStatusException;
 
 import java.util.List;
 import java.util.Optional;
 
-@Controller// passa a ser gerenciado pelo spring, pode receber requisições
+@RestController
+@RequestMapping("/api/clientes")
 public class ClienteController {
-
-
     private Clientes clientes;
 
     public ClienteController(Clientes clientes) {
         this.clientes = clientes;
     }
 
-    @GetMapping("/api/clientes/{id}")
-    @ResponseBody
-    public ResponseEntity<Cliente> getClienteById(@PathVariable Integer id) { //parametro , mesmo tipo do mapeamento da entidade @Column
-        Optional<Cliente> cliente = clientes.findById(id);//obtendo cliente por id
-        if (cliente.isPresent()) {
-            return ResponseEntity.ok(cliente.get()); //se existir
-        }
-        return ResponseEntity.notFound().build();
+    @GetMapping("{id}")
+    public Cliente getClienteById(@PathVariable Integer id) { //Retorna a referência do elemento através do seu ID.
+        return clientes
+                .findById(id)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Cliente não encontrado"));
     }
 
-    @PostMapping("/api/clientes")
-    @ResponseBody
-    public ResponseEntity save(@RequestBody Cliente cliente) {//request entra vem na requisisção e o response retorna
-        Cliente clienteSalvo = clientes.save(cliente);
-        return ResponseEntity.ok(clienteSalvo);
+    @PostMapping
+    @ResponseStatus(HttpStatus.CREATED)// codigo de estatus apropriado quando cria um recurso no servidor
+    public Cliente save(@RequestBody Cliente cliente) {
+        return clientes.save(cliente);
+
     }
 
-    @DeleteMapping("/api/clientes/{id}")
-    @ResponseBody
-    public ResponseEntity delete(@PathVariable Integer id) { //parametro , mesmo tipo do mapeamento da entidade @Column
-        Optional<Cliente> cliente = clientes.findById(id);
-        if (cliente.isPresent()) {
-            clientes.delete(cliente.get() );
-            return ResponseEntity.noContent().build();// quando não for retornar nada noContente
-        }
-        return ResponseEntity.notFound().build();
+    @DeleteMapping("{id}")
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    public void delete(@PathVariable Integer id) {
+        clientes.findById(id)
+                .map( cliente -> {
+                    clientes.delete(cliente );
+                    return cliente;
+                })
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND,
+                        "Cliente não encontrado") );
+
     }
 
-  @PutMapping("/api/clientes/{id}")
-  @ResponseBody
-    public ResponseEntity update(@PathVariable Integer id , @RequestBody  Cliente cliente){
-       return clientes
-               .findById(id) //validando id
-               .map(clienteExistente -> {// se existe
-                 cliente.setId(clienteExistente.getId()); // modifica id
-      clientes.save(cliente);
-      return ResponseEntity.noContent().build();
-       }).orElseGet( () -> ResponseEntity.notFound().build());//retorna suplai que e uma interface que retorna qualuer coisa
-  }
+    @PutMapping("{id}")
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    public void update(@PathVariable Integer id, @RequestBody Cliente cliente) {
+        clientes
+                .findById(id)
+                .map(clientesExistente ->{
+                    cliente.setId(clientesExistente.getId());
+                    clientes.save(cliente);
+                    return clientesExistente;
+                }) .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND,
+                        "Cliente não encontrado"));
+    }
 
-  @GetMapping("/api/clientes")
-  public ResponseEntity pesquisaCliente(Cliente filtro) {
-      ExampleMatcher matcher = ExampleMatcher // permite fazer algumas configurações pra encontrar clientes
-              .matching()
-              .withIgnoreCase()
-              .withStringMatcher(
-                      ExampleMatcher.StringMatcher.CONTAINING//aqui faz o filtro e retorna
-              );
+    @GetMapping
+    public List<Cliente> find(Cliente filtro) {
+        ExampleMatcher matcher = ExampleMatcher // permite fazer algumas configurações pra encontrar clientes
+                .matching()
+                .withIgnoreCase()
+                .withStringMatcher(
+                        ExampleMatcher.StringMatcher.CONTAINING//aqui faz o filtro e retorna
+                );
 
-      Example example = Example.of(filtro, matcher); // pega o filtro pega o que ta poupulada e cria o example
-      List<Cliente> lista = clientes.findAll(example);
-      return ResponseEntity.ok(lista);
-  }
+        Example example = Example.of(filtro, matcher); // pega o filtro pega o que ta poupulada e cria o example
+        return clientes.findAll(example);
+    }
+
 }
