@@ -1,28 +1,25 @@
-package io.github.byavess.api.Controller;
+package io.github.byavess.rest.Controller;
 
 import io.github.byavess.domain.entity.Cliente;
 import io.github.byavess.domain.repository.Clientes;
-import org.springframework.beans.factory.annotation.Autowired;
+
 import org.springframework.data.domain.Example;
 import org.springframework.data.domain.ExampleMatcher;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
-import org.springframework.stereotype.Controller;
+
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
 
 import java.util.List;
-import java.util.Optional;
 
 @RestController
 @RequestMapping("/api/clientes")
 public class ClienteController {
     private Clientes clientes;
-
     public ClienteController(Clientes clientes) {
+
         this.clientes = clientes;
     }
-
     @GetMapping("{id}")
     public Cliente getClienteById(@PathVariable Integer id) { //Retorna a referência do elemento através do seu ID.
         return clientes
@@ -34,9 +31,7 @@ public class ClienteController {
     @ResponseStatus(HttpStatus.CREATED)// codigo de estatus apropriado quando cria um recurso no servidor
     public Cliente save(@RequestBody Cliente cliente) {
         return clientes.save(cliente);
-
     }
-
     @DeleteMapping("{id}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
     public void delete(@PathVariable Integer id) {

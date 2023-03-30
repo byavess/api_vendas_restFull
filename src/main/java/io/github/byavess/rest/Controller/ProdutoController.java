@@ -1,4 +1,4 @@
-package io.github.byavess.api.Controller;
+package io.github.byavess.rest.Controller;
 
 import io.github.byavess.domain.entity.Cliente;
 import io.github.byavess.domain.entity.Produto;
@@ -52,13 +52,13 @@ public class ProdutoController {
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND,
                         "produto não encontrado") );
     }
-
     @GetMapping("{id}")
     public Produto getById(@PathVariable Integer id) {
         return repository
                 .findById(id)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Produto não econtrado"));
     }
+
     @GetMapping
     public List<Produto> find(Produto filtro) {
         ExampleMatcher matcher = ExampleMatcher // permite fazer algumas configurações pra encontrar clientes
