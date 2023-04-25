@@ -27,7 +27,7 @@ public class Cliente {
 
     @JsonIgnore
     @OneToMany( mappedBy = "cliente" , fetch = FetchType.LAZY )
-   private Set<Pedido> pedidos;
+    private Set<Pedido> pedidos;
 
     public Cliente(Integer id, String nome) {
         this.id = id;

@@ -1,5 +1,6 @@
 package io.github.byavess.domain.entity;
 
+import io.github.byavess.domain.enums.StatusPedido;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -11,6 +12,7 @@ import java.time.LocalDate;
 import java.util.List;
 
 
+@Embeddable
 @NoArgsConstructor
 @AllArgsConstructor
 @Data
@@ -28,6 +30,9 @@ public class Pedido {
     private LocalDate dataPedido;
     @Column(name = "total", precision = 20, scale = 2)//10000.00
     private BigDecimal total;
+    @Enumerated(EnumType.STRING)
+    @Column(name = "status")
+    private StatusPedido status;
     @OneToMany(mappedBy = "pedido")
    private List<ItemPedido> itens;
 
