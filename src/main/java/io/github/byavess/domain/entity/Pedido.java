@@ -1,12 +1,13 @@
 package io.github.byavess.domain.entity;
 
 import io.github.byavess.domain.enums.StatusPedido;
-import jakarta.persistence.*;
+
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
 
+import javax.persistence.*;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.List;

@@ -14,9 +14,10 @@ import io.github.byavess.exeption.RegraNegocioException;
 import io.github.byavess.rest.dto.ItemPedidoDTO;
 import io.github.byavess.rest.dto.PedidoDTO;
 import io.github.byavess.service.PedidoService;
-import jakarta.transaction.Transactional;
+
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 
 import java.time.LocalDate;
